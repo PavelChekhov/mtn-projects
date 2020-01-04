@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="AntPaCh" basedir="." default="dist">
+    
+    <property file="${basedir}/config/project.properties"/>
+    <property name="src" location="${basedir}/src"/>
+    <property name="build" location="${basedir}/build"/>
+    <property name="dist" location="${basedir}/dist"/>
+    <property name="lib" location="${basedir}/lib"/>
+    <property name="test" location="${basedir}/test"/>
+    <property name="report" location="${basedir}/report"/>
+ 
+    <path id="classpath">
+	<fileset dir="${lib}" includes="*.jar"/>
+    </path>
+
+    <target name="init">
+    	<mkdir dir="${build}"/>
+	<mkdir dir="${dist}"/>
+    	<mkdir dir="${test}/build"/>
+	<mkdir dir="${report}"/>
+        <echo>= Make dir complete =</echo>
+    </target>
+    
+    <target name="compile" depends="init">
+    	<javac srcdir="${src}" destdir="${build}" classpathref="classpath" includeantruntime="false"/>
+        <echo>= Compil is successful =</echo>
+    </target>		 
+
+    <target name="dist" depends="compile">
+    	<jar jarfile="${dist}/AntPaCh.jar" basedir="${build}">
+	        <manifest>
+			<attribute name="Main-Class" value="com.test.Project"/>
+	        </manifest>
+	</jar>
+    </target>
+    
+    <target name="clean">
+    	<delete dir="${build}"/>
+   	<delete dir="${dist}"/>
+	<delete dir="${test}/build"/>
+    	<delete dir="${report}"/>
+        <echo>= Clean complete =</echo>
+    </target>
+    
+    <target name="compile-test" depends="compile">
+        <javac srcdir="${test}" destdir="${test}/build" classpathref="classpath" includeantruntime="false"/>
+    </target>
+    <target name="test" depends="compile,compile-test">
+        <junit printsummary="yes" haltonfailure="no">
+	    <classpath>
+		<fileset dir="${lib}" includes="*/*.jar"/>
+                <pathelement location="${test}/build"/>
+	    </classpath>
+            <test name="com.test.UnitTest" haltonfailure="no" todir="${report}" outfile="report">
+             	<formatter type="plain"/>
+               	<formatter type="xml"/>
+            </test>
+        </junit>
+        <echo>= Testing is successful =</echo>
+    </target>		
+</project>
